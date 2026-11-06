@@ -19,30 +19,51 @@
 
 目标用户是 **8G 显存 + 32GB 内存** 的机器——其中很大一部分是**机房退役/改造工作站**：
 两条内存槽加不满、ECC 开关在固件里、显卡位是涡轮卡形态。本包所有参数按这批机器实测定版。
+（10-12 核心改造测量机即是此配置：`Total VRAM 31907 MB, total RAM 31860 MB`。）
 
 The target machine is **8 GB VRAM + 32 GB system RAM** — and a large share of those machines are
 **converted ex-server-room workstations**: only two DIMM slots (no room to grow), firmware-level
 ECC toggles, blower-style card bays. Every parameter in this pack is frozen from real measurement
-on exactly this class of hardware.
+on exactly this class of hardware (the 10-12 core-refactor benchmark rig reports
+`Total VRAM 31907 MB, total RAM 31860 MB`).
 
-### 与秋叶整合包的对比 / vs. the Qiuye (秋叶) integration pack
+### 与秋叶 aki 版的对比 / vs. the Qiuye (秋叶) aki build
 
-秋叶整合包是中文社区最普及的 N 卡整合方案。本包不替代它——补的是它不覆盖的坑位。
-The Qiuye pack is the most widely used NVIDIA bundle in the Chinese community. This pack does not
-replace it — it fills the gap that bundle does not cover.
+[秋叶 aki 版（`ComfyUI-intel-aki-v1.1`）](F:\ComfyUI-Intel\ComfyUI-intel-aki-v1.1) 与本包同为
+**Intel 专用包**，分工不同：aki 版是「核心改造试验台」（OmniXPU 适配器层 + VSA/SLA/SolAttn 节点，
+带管理器），本包是「产品坑位包」（无管理器、坑位填平、开箱即用）。不替代 aki 版——本包的
+跑径与 SOP 直接继承自它 10-12 的核心改造测量。
 
-| 维度 / Dimension | 秋叶整合包 / Qiuye Pack | 本包 / This Pack |
+The Qiuye aki build (`ComfyUI-intel-aki-v1.1`) and this pack are both **Intel-only packages** with
+different jobs: the aki build is the core-refactor workbench (OmniXPU adapter layer + VSA/SLA/SolAttn
+nodes, with launcher UI); this pack is the product gap-fill bundle (no launcher, gaps filled,
+ready to run). It does not replace the aki build — its pipelines and SOP inherit directly from
+the 10-12 core-refactor measurements.
+
+| 维度 / Dimension | 秋叶 aki 版 / aki build | 本包 / This Pack |
 |---|---|---|
-| 硬件生态 / Hardware | NVIDIA CUDA 为主 / CUDA-centric | **Intel Arc XPU** 原生（SYCL）/ native SYCL |
-| 启动方式 / Launch | 图形启动器（绘世 / ComfyUI 启动器）/ GUI launcher | **无启动器**，bat 直启 main.py / no launcher, bat → main.py |
-| 目标配置 / Target rig | N 卡 8~24G 显存 + 16~32G 内存 / NVIDIA 8–24G VRAM | **8G 显存 + 32G 内存**（工作站改造机典型配置）/ converted-workstation class |
-| H3 视频跑径 / H3 video pipelines | 通用包未内置，需自配 / not bundled, DIY | **PIKA H3 Flex 4 条工作流开箱即用** / 4 workflows ready to run |
-| 内存口径 / Memory SOP | 通用建议 / generic advice | **32G 硬口径**：页面文件 + nvfp4 档 + ECC 关（实测定版）/ hard SOP, measured on 32G rigs |
-| 模型管理 / Models | 启动器内下载管理 / launcher-managed | 13 件清单 + hf-mirror 脚本（字节校验 / 断点续跑）/ manifest + script (byte-checked, resumable) |
-| 依赖卫生 / Dep hygiene | N/A（N 卡生态） | **零 CUDA 残留**（KJNodes Sage 已切除）/ zero CUDA leftovers |
+| 定位 / Role | 核心改造试验台（v1.1）/ core-refactor workbench | **产品坑位包**，填坑即用 / product gap-fill bundle |
+| 启动方式 / Launch | 管理器启动界面 / launcher UI | **无启动器**，bat 直启 main.py / no launcher, bat → main.py |
+| 内核 / Kernels | OmniXPU 适配器层（attention/fp8/int8/vram-trim）/ OmniXPU adapters | 继承同一内核口径 / inherits the same kernel posture |
+| 工作流 / Workflows | 自配 / DIY | **12 条预挂 PIKA H3 Flex** 开箱即用 / 12 ready-to-run |
+| 内存口径 / Memory SOP | 10-12 实测后定口径 / posture frozen from 10-12 data | **32G 硬口径**写成 SOP + 坑位表 / hard SOP + troubleshooting table |
+| 模型管理 / Models | 自管 / self-managed | 13 件清单 + hf-mirror 脚本（字节校验）/ manifest + byte-checked script |
+| 交付物 / Deliverable | 试验台本体 / the workbench itself | 引擎+跑径+SOP 全量包（网盘）+ 轻量口径（GitHub）/ full bundle + lightweight track |
 
-一包一句话：**给 N 卡之外那批工作站，一套和秋叶同级的开箱即用。**
-One line: for the workstations outside the NVIDIA fold — plug-and-play at the same bar.
+### 10-12 核心改造测量 / 10-12 core-refactor measurements
+
+同一 H3 图生视频工作流（6 步 turbo、480P 档、B70 + 32GB 内存机），端到端单轮：
+
+Same H3 image-to-video workflow (6-step turbo, 480P tier, B70 + 32 GB rig), single end-to-end round:
+
+| 测项 / Run | 改动 / Delta | 端到端 / End-to-end | 结论 / Takeaway |
+|---|---|---|---|
+| ab_A_r15 | 基线（无适配器层）/ baseline (no adapter layer) | 245.17 s | — |
+| ab_B_r15 | OmniXPU 适配器层全开（attention/fp8/int8/vram-trim）/ adapters on | **142.94 s** | **1.71×** 端到端 / end-to-end |
+| ab_B 锁页尝试 / pinned-memory attempt | pinned 3823 MB | 崩 / crashed | XPU torch 无 CUDA：`AssertionError: Torch not compiled with CUDA enabled` → **锁页内存不必开**（本包默认 `OMNIXPU_PIN_MEMORY=0`）/ pinned memory is a no-go on XPU torch — off by default |
+
+启动链路（boot_clean）：OmniXPU 预启动 2.8s、H3-VSA-XPU 0.0s。
+Boot chain (boot_clean): OmniXPU prestartup 2.8s, H3-VSA-XPU 0.0s.
 
 ---
 
