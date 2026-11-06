@@ -6,11 +6,20 @@
 A product gap-fill bundle for ComfyUI on Intel Arc (XPU): everything measured on real hardware,
 every gap filled, nothing to configure.
 
-> 📦 **Full bundle (~85 GB)** — engine + 12 workflows + 13 models, split archives + SHA256SUMS —
-> distributed via **Baidu Netdisk** (国内网盘下载；联系维护者获取分享链接).
+> 📦 **Full bundle (one file, ~81 GB)** — `Intel-Studio-Pack_full_v1.tar`: engine + 12 workflows +
+> 13 models. **Single archive** — download one file, `tar -xf`, done (weights don't compress, so it's
+> archived uncompressed). Distributed via **Baidu Netdisk** / USB copy (联系维护者获取分享链接).
 >
 > 🪶 **Lightweight track (this repo)** — model manifest + byte-checked download script (13 models,
 > ~76 GB via hf-mirror). Bring your own engine, or assemble from the handbook.
+
+**Download notes (CN users)** — the full bundle is a single 81 GB archive on Baidu Netdisk by design
+(GitHub Releases cap files at 2 GB):
+
+1. **Normal**: open the share link in the Baidu client or browser — one file, queued like any download.
+2. **Throttled?** Non-VIP accounts are slowed on large files. Load the share link into **Xunlei (迅雷)**
+   or the Baidu client — both resume broken transfers and usually sidestep the worst of it.
+3. **Fastest**: on-site installs / dealer delivery — USB copy, no throttling at all.
 
 ---
 
