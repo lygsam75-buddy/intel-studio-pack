@@ -30,38 +30,21 @@ ComfyUI on Intel Arc (XPU) 的产品坑位包：全部参数实测定版，坑�
 
 目标机器是 **8G 显存 + 32GB 内存** —— 其中很大一部分是**机房退役/改造工作站**：
 两条内存槽加不满、ECC 开关在固件里、显卡位是涡轮卡形态。本包所有参数按这批机器实测定版。
-（10-12 核心改造测量机即是此配置：`Total VRAM 31907 MB, total RAM 31860 MB`。）
+（实测机即是此配置：`Total VRAM 31907 MB, total RAM 31860 MB`。）
 
 ---
 
-## 与秋叶 aki 版的对比
-
-秋叶 aki 版（`ComfyUI-intel-aki-v1.1`）与本包同为 **Intel 专用包**，分工不同：
-aki 版是「核心改造试验台」（OmniXPU 适配器层 + VSA/SLA/SolAttn 节点，带管理器），
-本包是「产品坑位包」（无管理器、坑位填平、开箱即用）。不替代 aki 版 —— 本包的
-跑径与 SOP 直接继承自它 10-12 的核心改造测量。
-
-| 维度 | 秋叶 aki 版 | 本包 |
-|---|---|---|
-| 定位 | 核心改造试验台（v1.1） | **产品坑位包** |
-| 启动方式 | 管理器启动界面 | **无启动器**，bat 直启 main.py |
-| 内核 | OmniXPU 适配器层（attention/fp8/int8/vram-trim） | 继承同一内核口径 |
-| 工作流 | 自配 | **12 条预挂 PIKA H3 Flex** 开箱即用 |
-| 内存口径 | 10-12 实测后定口径 | **32G 硬口径**写成 SOP + 坑位表 |
-| 模型管理 | 自管 | 13 件清单 + hf-mirror 脚本（字节校验） |
-| 交付物 | 试验台本体 | 全量包（网盘）+ 轻量口径（本仓库） |
-
-### 10-12 核心改造测量
+## 实测性能
 
 同一 H3 图生视频工作流（6 步 turbo、480P 档、B70 + 32GB 内存机），端到端单轮：
 
-| 测项 | 改动 | 端到端 | 结论 |
+| 测项 | 配置 | 端到端 | 结论 |
 |---|---|---|---|
-| ab_A_r15 | 基线（无适配器层） | 245.17 s | — |
-| ab_B_r15 | OmniXPU 适配器层全开（attention/fp8/int8/vram-trim） | **142.94 s** | **1.71×** 端到端 |
-| ab_B 锁页尝试 | pinned 3823 MB | 崩溃 | XPU torch 无 CUDA：`AssertionError: Torch not compiled with CUDA enabled` → **锁页内存不必开**（本包默认 `OMNIXPU_PIN_MEMORY=0`） |
+| ab_A_r15 | 内核适配层关（基线） | 245.17 s | — |
+| ab_B_r15 | 适配层全开（attention/fp8/int8/vram-trim） | **142.94 s** | **1.71×** 端到端 |
+| 锁页尝试 | pinned 3823 MB | 崩溃 | XPU torch 无 CUDA → 锁页默认关（`OMNIXPU_PIN_MEMORY=0`） |
 
-启动链路（boot_clean）：OmniXPU 预启动 2.8 s、H3-VSA-XPU 0.0 s。
+OmniXPU 预启动 2.8 s。
 
 ---
 
