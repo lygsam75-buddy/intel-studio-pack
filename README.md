@@ -34,40 +34,22 @@ every gap filled, nothing to configure.
 The target machine is **8 GB VRAM + 32 GB system RAM** — and a large share of those machines are
 **converted ex-server-room workstations**: only two DIMM slots (no room to grow), firmware-level
 ECC toggles, blower-style card bays. Every parameter in this pack is frozen from real measurement
-on exactly this class of hardware (the 10-12 core-refactor benchmark rig reports
+on exactly this class of hardware (the benchmark rig reports
 `Total VRAM 31907 MB, total RAM 31860 MB`).
 
 ---
 
-## vs. the Qiuye (秋叶) aki build
-
-The Qiuye aki build (`ComfyUI-intel-aki-v1.1`) and this pack are both **Intel-only packages** with
-different jobs: the aki build is the core-refactor workbench (OmniXPU adapter layer + VSA/SLA/SolAttn
-nodes, with launcher UI); this pack is the product gap-fill bundle (no launcher, gaps filled,
-ready to run). It does not replace the aki build — its pipelines and SOP inherit directly from
-the 10-12 core-refactor measurements.
-
-| Dimension | Qiuye aki build | This pack |
-|---|---|---|
-| Role | core-refactor workbench (v1.1) | **product gap-fill bundle** |
-| Launch | launcher UI | **no launcher**, bat → main.py |
-| Kernels | OmniXPU adapters (attention/fp8/int8/vram-trim) | inherits the same kernel posture |
-| Workflows | DIY | **12 ready-to-run**, wired to PIKA H3 Flex |
-| Memory SOP | posture frozen from 10-12 data | **hard 32G SOP** + troubleshooting table |
-| Models | self-managed | 13-item manifest + byte-checked script |
-| Deliverable | the workbench itself | full bundle (Netdisk) + lightweight track (this repo) |
-
-### 10-12 core-refactor measurements
+## Measured performance
 
 Same H3 image-to-video workflow (6-step turbo, 480P tier, B70 + 32 GB rig), single end-to-end round:
 
-| Run | Delta | End-to-end | Takeaway |
+| Run | Configuration | End-to-end | Takeaway |
 |---|---|---|---|
-| ab_A_r15 | baseline (no adapter layer) | 245.17 s | — |
-| ab_B_r15 | OmniXPU adapters on (attention/fp8/int8/vram-trim) | **142.94 s** | **1.71×** end-to-end |
-| ab_B pinned-memory attempt | pinned 3823 MB | crashed | XPU torch has no CUDA: `AssertionError: Torch not compiled with CUDA enabled` → **pinned memory is a no-go on XPU torch** (off by default: `OMNIXPU_PIN_MEMORY=0`) |
+| ab_A_r15 | kernel adapter stack off (baseline) | 245.17 s | — |
+| ab_B_r15 | full adapter stack (attention/fp8/int8/vram-trim) | **142.94 s** | **1.71×** end-to-end |
+| pinned-memory attempt | pinned 3823 MB | crashed | XPU torch has no CUDA → pinned memory stays off (`OMNIXPU_PIN_MEMORY=0`) |
 
-Boot chain (boot_clean): OmniXPU prestartup 2.8 s, H3-VSA-XPU 0.0 s.
+OmniXPU prestartup: 2.8 s.
 
 ---
 
