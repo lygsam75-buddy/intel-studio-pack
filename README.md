@@ -6,26 +6,31 @@
 A product gap-fill bundle for ComfyUI on Intel Arc (XPU): everything measured on real hardware,
 every gap filled, nothing to configure.
 
-> 📦 **Full bundle (84 GiB / 90,188,748,800 B)** — `Intel-Studio-Pack_full_v1.tar`: engine + 12 workflows +
+> 📦 **Full bundle (84 GiB / 90,195,179,520 B)** — `Intel-Studio-Pack_full_v1.tar`: engine + 13 workflows +
 > 13 models. **Single archive** — weights don't compress, so it's archived uncompressed; `tar -xf`
 > extracts everything.
-> - **Baidu Netdisk (CN)**: <https://pan.baidu.com/s/17AEswSAjSkif5MqV5Kj3kA> 提取码 `8sk3` (permanent).
->   Stored as **5 volumes** `Intel-Studio-Pack_full_v1.tar.01`–`.05` (18.04 GB each). Merge first:
+> - **Baidu Netdisk (CN)**: <https://pan.baidu.com/s/1cScBbO7Z0pZ0iJAR8z4BtQ> 提取码 `1ccp` (permanent).
+>   Stored as **5 volumes** `Intel-Studio-Pack_full_v1.tar.01`–`.05` (4 × 18,253,611,008 + 17,180,735,488 B). Merge first:
 >   `cat Intel-Studio-Pack_full_v1.tar.0* > Intel-Studio-Pack_full_v1.tar` (Git Bash) or
 >   `copy /b Intel-Studio-Pack_full_v1.tar.01+…+.05 Intel-Studio-Pack_full_v1.tar` (cmd), then verify
->   against `SHA256_Intel-Studio-Pack_full_v1.txt`.
+>   with `SHA256SUMS_volumes.txt` (per volume) and `SHA256_Intel-Studio-Pack_full_v1.tar.txt` (merged).
 > - **USB copy**: the single `Intel-Studio-Pack_full_v1.tar` — no merge needed.
 >
 > 🪶 **Lightweight track (this repo)** — model manifest + byte-checked download script (13 models,
 > ~76 GB via hf-mirror). Bring your own engine, or assemble from the handbook.
 
-**Download notes (CN users)** — the full bundle is a single 81 GB archive on Baidu Netdisk by design
+**Download notes (CN users)** — the full bundle is ~85 GB, stored on Baidu Netdisk as **5 split volumes**
 (GitHub Releases cap files at 2 GB):
 
-1. **Normal**: open the share link in the Baidu client or browser — one file, queued like any download.
+1. **Normal**: open the share link in the Baidu client or browser and queue all 5 volumes + checksum files.
 2. **Throttled?** Non-VIP accounts are slowed on large files. Load the share link into **Xunlei (迅雷)**
-   or the Baidu client — both resume broken transfers and usually sidestep the worst of it.
+   or the Baidu client — both resume broken transfers; split volumes mean only the failed one needs re-downloading.
 3. **Fastest**: on-site installs / dealer delivery — USB copy, no throttling at all.
+
+> **Downloaded before 16 Nov 2026?** No need to re-download the 85 G bundle. Grab
+> `hotfix_comfy_ldm_models_v1.zip` (same share folder) and extract it into the package root
+> **`Intel-Studio-Pack\`** (the level containing `ComfyUI\`), overwriting. The patch restores 45
+> code files mistakenly excluded from the old build. Downloads after 16 Nov don't need it.
 
 ---
 
@@ -95,23 +100,40 @@ Launch parameters frozen from B70 measurement:
 
 ---
 
-## Workflows (12, all wired to the PIKA H3 Flex path)
+## Workflows (13, all wired to the PIKA H3 Flex path)
 
-### H3 video (4)
+### H3 video (5)
 
 | Workflow | Purpose |
 |---|---|
 | 图生视频_首帧_H3 | single image → video |
 | 图生视频_首尾帧_H3 | first+last frame interpolation |
-| 图生视频_二采_H3 | low-res render + latent upscale |
-| 图生视频_打斗分镜_H3 | dynamic action shots |
+| 打斗分镜_参考生视频_H3 | dynamic action shots |
+| 二采H3工作流 | low-res render + latent upscale |
+| S4_演示_三关键帧_704x1280 | 3-keyframe pinning demo (704×1280 portrait) |
 
 The pipeline is already switched to **PIKA H3 Flex** (LoRAs attached: pika_h3_flex_fl2va / ref2va).
 **Flex is a distillation adapter — do not stack other acceleration LoRAs on top** (stacking breaks the output).
 
-### Z-Image (8)
+### Z-Image (7)
 
-t2i / i2i / multi-reference etc., on z_image_turbo_int8_convrot + qwen_3_4b_fp8_mixed.
+| Workflow | Purpose |
+|---|---|
+| 人物档案_设定图_Z-Image | character sheet |
+| 参考重绘_单角色_Z-Image | single-character reference repaint |
+| 多参考出图_双人横版_Z-Image | multi-ref two-person landscape |
+| 多参考出图_双人竖版_Z-Image | multi-ref two-person portrait |
+| 定妆照_Z-Image-Turbo | costume shot (turbo tier) |
+| 定妆照_定妆图_Z-Image | costume still |
+| 提示词工坊_文生图_和参考生图 Z-Image | t2i / reference i2i workshop |
+
+On z_image_turbo_int8_convrot + qwen_3_4b_fp8_mixed.
+
+### Video tools (1)
+
+| Workflow | Purpose |
+|---|---|
+| 视频水印消除 | video watermark removal |
 
 ---
 
@@ -197,7 +219,7 @@ Intel-Studio-Pack/
 ├── python_embeded/         # bundled Python + Intel XPU runtime
 └── ComfyUI/
     ├── custom_nodes/       # KJNodes (CUDA-cleaned) / TE-Speed-MiniMaxH3 + 40 more
-    ├── user/default/workflows/  # 12 workflows
+    ├── user/default/workflows/  # 13 workflows
     ├── input/              # voices/ + sample assets
     └── models/             # 13 models (in the full bundle)
 ```
