@@ -5,24 +5,28 @@
 **不含管理器启动界面** —— 引擎 + 跑径 + SOP 直出。
 ComfyUI on Intel Arc (XPU) 的产品坑位包：全部参数实测定版，坑位填平，开箱即用。
 
-> 📦 **全量包（84 GiB / 90,188,748,800 字节）** —— `Intel-Studio-Pack_full_v1.tar`：引擎 + 12 条工作流 +
+> 📦 **全量包（84 GiB / 90,195,179,520 字节）** —— `Intel-Studio-Pack_full_v1.tar`：引擎 + 13 条工作流 +
 > 13 个模型。**单归档包** —— 模型权重压不动，故不压缩打包；`tar -xf` 一次解出全部。
-> - **百度网盘（国内）**：<https://pan.baidu.com/s/17AEswSAjSkif5MqV5Kj3kA> 提取码 `8sk3`（永久）。
->   网盘上是 **5 个分卷** `Intel-Studio-Pack_full_v1.tar.01`–`.05`（每件 18.04 GB），下载后先合并：
+> - **百度网盘（国内）**：<https://pan.baidu.com/s/1cScBbO7Z0pZ0iJAR8z4BtQ> 提取码 `1ccp`（永久）。
+>   网盘上是 **5 个分卷** `Intel-Studio-Pack_full_v1.tar.01`–`.05`（4 × 18,253,611,008 + 17,180,735,488 字节），下载后先合并：
 >   `cat Intel-Studio-Pack_full_v1.tar.0* > Intel-Studio-Pack_full_v1.tar`（Git Bash）或
 >   `copy /b Intel-Studio-Pack_full_v1.tar.01+…+.05 Intel-Studio-Pack_full_v1.tar`（cmd），
->   再用 `SHA256_Intel-Studio-Pack_full_v1.txt` 校验。
+>   再用 `SHA256SUMS_volumes.txt`（逐卷）与 `SHA256_Intel-Studio-Pack_full_v1.tar.txt`（合并后整包）校验。
 > - **U 盘拷贝**：直接用整包 `Intel-Studio-Pack_full_v1.tar`，不用合并。
 >
 > 🪶 **轻量口径（本仓库）** —— 模型清单 + 字节校验下载脚本（13 个模型，约 76 GB，走 hf-mirror）。
 > 引擎自备，或照主手册自行组装。
 
-**国内下载注意** —— 全量包是单个 81G 大文件，走百度网盘（GitHub Releases 单文件上限 2G，放不进）：
+**国内下载注意** —— 全量包约 85 GB，百度网盘按 **5 个分卷**存放（GitHub Releases 单文件上限 2 G，放不进）：
 
-1. **正常路**：分享链接 → 百度网盘客户端 / 网页，就下一个文件，正常排队。
-2. **被限速？** 非会员大文件会被限速。把分享链接丢进 **迅雷** 或网盘客户端挂机下，
-   支持断点续传，通常能绕开最狠的限速。
+1. **正常路**：分享链接 → 百度网盘客户端 / 网页，把 5 个分卷 + 校验件全部排进队列。
+2. **被限速？** 非会员大文件会被限速。把分享链接丢进 **迅雷** 或网盘客户端挂机下，支持断点续传；
+   分卷的好处是断了只需补下那一卷。
 3. **最快路**：装机 / 渠道交付 —— U 盘 / 移动硬盘拷贝，完全不限速。
+
+> **11 月 16 日前下载过旧包的用户**：不用重下 85 G 全量包。下载 `hotfix_comfy_ldm_models_v1.zip`
+> （同一分享目录），解压到包根目录 **`Intel-Studio-Pack\`**（与 `ComfyUI\` 同级）选择覆盖即可。
+> 补丁修的是旧包误排的 3 处代码模块（45 个文件）。11-16 之后下载的不需要。
 
 ---
 
@@ -90,23 +94,40 @@ OmniXPU 预启动 2.8 s。
 
 ---
 
-## 工作流（12 条，已挂 PIKA H3 Flex 跑径）
+## 工作流（13 条，已挂 PIKA H3 Flex 跑径）
 
-### H3 视频（4 条）
+### H3 视频（5 条）
 
 | 工作流 | 用途 |
 |---|---|
 | 图生视频_首帧_H3 | 单图 → 视频 |
 | 图生视频_首尾帧_H3 | 首尾帧夹逼 → 视频 |
-| 图生视频_二采_H3 | 低分辨率出片 + latent 放大 |
-| 图生视频_打斗分镜_H3 | 动态大分镜 |
+| 打斗分镜_参考生视频_H3 | 动态大分镜 |
+| 二采H3工作流 | 低分辨率出片 + latent 放大 |
+| S4_演示_三关键帧_704x1280 | 三关键帧钉帧演示（704×1280 竖版） |
 
 跑径已切 **PIKA H3 Flex**（LoRA 已挂：pika_h3_flex_fl2va / ref2va）。
 **PIKA Flex 是蒸馏适配器，不能再叠其他加速 LoRA**（叠了必坏）。
 
-### Z-Image 出图（8 条）
+### Z-Image 出图（7 条）
 
-文生图 / 图生图 / 多参考等，走 z_image_turbo_int8_convrot + qwen_3_4b_fp8_mixed。
+| 工作流 | 用途 |
+|---|---|
+| 人物档案_设定图_Z-Image | 人物档案设定图 |
+| 参考重绘_单角色_Z-Image | 单角色参考重绘 |
+| 多参考出图_双人横版_Z-Image | 多参考双人横版 |
+| 多参考出图_双人竖版_Z-Image | 多参考双人竖版 |
+| 定妆照_Z-Image-Turbo | 定妆照（turbo 档） |
+| 定妆照_定妆图_Z-Image | 定妆图 |
+| 提示词工坊_文生图_和参考生图 Z-Image | 文生图 / 参考生图 |
+
+走 z_image_turbo_int8_convrot + qwen_3_4b_fp8_mixed。
+
+### 视频工具（1 条）
+
+| 工作流 | 用途 |
+|---|---|
+| 视频水印消除 | 视频水印擦除 |
 
 ---
 
@@ -191,7 +212,7 @@ Intel-Studio-Pack/
 ├── python_embeded/         # 内置 Python + Intel XPU 运行时
 └── ComfyUI/
     ├── custom_nodes/       # KJNodes(CUDA已清) / TE-Speed-MiniMaxH3 + 另 40+ 节点包
-    ├── user/default/workflows/  # 12 条工作流
+    ├── user/default/workflows/  # 13 条工作流
     ├── input/              # voices/ + 示例件
     └── models/             # 13 个模型（全量包内置）
 ```
