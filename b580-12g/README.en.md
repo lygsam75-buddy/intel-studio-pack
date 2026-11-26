@@ -130,14 +130,20 @@ One test tells you whether it worked: **run one 720P clip. If it finishes under 
 
 ## 9. Download
 
-- Release asset: `B580_专用文件替换包.zip` (50,209 bytes)
+**Release (recommended)**
+<https://github.com/lygsam75-buddy/intel-studio-pack/releases/tag/b580-12g-v1>
+
+- Asset: `B580_12G_patch_pack_v1.zip` — 50,209 bytes
 - SHA-256: `515eae1572d6c864377415c018747130e4b700ae1b6f8bb6731cb3f59909fff6`
+
+**Or browse the folder** (grab files individually, no zip)
+<https://github.com/lygsam75-buddy/intel-studio-pack/tree/main/b580-12g>
 
 Verify:
 
 ```powershell
 # Windows PowerShell
-Get-FileHash .\B580_专用文件替换包.zip -Algorithm SHA256
+Get-FileHash .\B580_12G_patch_pack_v1.zip -Algorithm SHA256
 ```
 
 ---

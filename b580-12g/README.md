@@ -130,14 +130,20 @@ H3 出片 1024×576×124 → VAEDecode → B580 分块超分 → 1536×864 → �
 
 ## 九、下载
 
-- Release 资产：`B580_专用文件替换包.zip`（50,209 字节）
+**Release（推荐）**
+<https://github.com/lygsam75-buddy/intel-studio-pack/releases/tag/b580-12g-v1>
+
+- 资产：`B580_12G_patch_pack_v1.zip` — 50,209 字节
 - SHA-256：`515eae1572d6c864377415c018747130e4b700ae1b6f8bb6731cb3f59909fff6`
+
+**或者直接看目录**（不想下 zip 就逐个文件取）
+<https://github.com/lygsam75-buddy/intel-studio-pack/tree/main/b580-12g>
 
 校验：
 
-```bash
+```powershell
 # Windows PowerShell
-Get-FileHash .\B580_专用文件替换包.zip -Algorithm SHA256
+Get-FileHash .\B580_12G_patch_pack_v1.zip -Algorithm SHA256
 ```
 
 ---
