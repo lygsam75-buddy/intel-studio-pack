@@ -226,3 +226,28 @@ Intel-Studio-Pack/
 
 Sanitized: no manager components (no app.py / manager.json); zero CUDA leftovers
 (Sage references excised from KJNodes).
+
+
+---
+
+## 12 GB VRAM (B580): dedicated patch pack
+
+The defaults above are frozen on a 32 GB B70. On a **B580 (11.6 GiB)** they are the wrong shape:
+either half speed, or the process disappears with no traceback. `b580-12g/` is a drop-in patch
+that makes a 12 GB card behave like a 12 GB card — 4 launch flags, 4 resolution presets, one tiled
+upscale node. **No models included**, 49 KB zipped.
+
+| Preset | End-to-end (cold) |
+|---|--:|
+| 480P · 5 s | 157 s |
+| 720P · 5 s | **474 s (7:54)** |
+| 864P · 5 s | 638 s |
+| 1024×576 render → upscale 1536×864 | 8.8 min |
+
+- **中文（含四处改动的实测依据）** → [`b580-12g/README.md`](b580-12g/README.md)
+- **English** → [`b580-12g/README.en.md`](b580-12g/README.en.md)
+
+Three changes matter most: `--reserve-vram 2` (-20% end-to-end), `--enable-dynamic-vram` mandatory
+(+75% if off), and `--disable-pinned-memory` — the real switch, because `OMNIXPU_PIN_MEMORY=0`
+is a dead knob nothing in the engine tree reads (-9% cold start, and it closes the upstream
+#16804 / #16846 crash path).
